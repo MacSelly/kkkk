@@ -1,0 +1,7 @@
+{
+  "name": "HMS Pro - Hotel Management System",
+  "description": "A comprehensive, high-performance hotel management platform for streamline check-ins, housekeeping, and reservations.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
