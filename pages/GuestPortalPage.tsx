@@ -384,51 +384,64 @@ const GuestPortalPage: React.FC<GuestPortalPageProps> = ({ user, onLogout }) => 
     </div>
   );
 
+  const [showEditProfile, setShowEditProfile] = useState(false);
+  const [profileFormData, setProfileFormData] = useState({
+    name: user?.name || '',
+    email: user?.email || '',
+    phone: '',
+  });
+
+  const handleUpdateProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    // In a real app, this would call an API
+    setShowEditProfile(false);
+  };
+
   const renderAccount = () => (
     <div className="space-y-8 animate-in fade-in duration-300">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Profile Card Elevated */}
-        <div className="lg:col-span-8 bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-200 dark:border-slate-700 p-8 shadow-sm relative overflow-hidden flex flex-col justify-center min-h-[400px]">
-          <div className="absolute top-0 right-0 size-64 bg-primary/5 rounded-full blur-[100px] -mt-20 -mr-20"></div>
-          <div className="flex flex-col md:flex-row items-center gap-10 relative z-10">
+        <div className="lg:col-span-8 bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-200 dark:border-slate-700 p-7 sm:p-8 shadow-sm relative overflow-hidden flex flex-col justify-center min-h-[280px]">
+          <div className="absolute top-0 right-0 size-48 bg-primary/5 rounded-full blur-[80px] -mt-10 -mr-10"></div>
+          <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
             <div className="relative group">
-              <div className="absolute -inset-2 bg-gradient-to-tr from-primary to-cyan-400 rounded-full opacity-30 blur group-hover:opacity-50 transition duration-500"></div>
-              <div className="size-40 rounded-full bg-white dark:bg-slate-900 p-2 overflow-hidden shadow-2xl relative">
+              <div className="absolute -inset-1.5 bg-gradient-to-tr from-primary to-cyan-400 rounded-full opacity-30 blur group-hover:opacity-50 transition duration-500"></div>
+              <div className="size-28 sm:size-32 rounded-full bg-white dark:bg-slate-900 p-1.5 overflow-hidden shadow-2xl relative">
                 {user?.avatar ? (
                   <img src={user.avatar} alt={user.name} className="size-full rounded-full object-cover" />
                 ) : (
                   <div className="size-full rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
-                     <span className="material-symbols-outlined text-6xl text-slate-300">person</span>
+                     <span className="material-symbols-outlined text-4xl text-slate-300">person</span>
                   </div>
                 )}
               </div>
             </div>
-            <div className="text-center md:text-left space-y-4">
+            <div className="text-center md:text-left space-y-3">
               <div>
-                <span className="px-3 py-1 bg-amber-50 dark:bg-amber-900/20 text-amber-500 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-amber-200/50">Gold Status Member</span>
-                <h3 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter mt-4">{user?.name}</h3>
-                <p className="text-slate-400 font-bold uppercase tracking-widest text-xs mt-1">{user?.email}</p>
+                <span className="px-2.5 py-0.5 bg-amber-50 dark:bg-amber-900/20 text-amber-500 rounded-full text-[9px] font-black uppercase tracking-[0.2em] border border-amber-200/50">Gold Status Member</span>
+                <h3 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tighter mt-3 lowercase first-letter:uppercase">{user?.name}</h3>
+                <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-0.5">{user?.email}</p>
               </div>
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
-                 <button className="h-12 px-8 bg-slate-900 dark:bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-slate-800 transition-all">Edit Profile</button>
-                 <button onClick={onLogout} className="h-12 px-8 bg-rose-50 dark:bg-rose-950/30 text-rose-500 text-[10px] font-black uppercase tracking-widest rounded-xl border border-rose-200 dark:border-rose-900/50 hover:bg-rose-100 transition-all">Safe Sign Out</button>
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-1">
+                 <button onClick={() => setShowEditProfile(true)} className="h-10 px-6 bg-slate-900 dark:bg-slate-950 text-white text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-slate-800 transition-all">Edit Profile</button>
+                 <button onClick={onLogout} className="h-10 px-6 bg-rose-50 dark:bg-rose-950/30 text-rose-500 text-[9px] font-black uppercase tracking-widest rounded-xl border border-rose-200 dark:border-rose-900/50 hover:bg-rose-100 transition-all">Safe Sign Out</button>
               </div>
             </div>
           </div>
         </div>
 
         {/* Loyalty Elevated */}
-        <div className="lg:col-span-4 bg-slate-900 dark:bg-slate-950 rounded-[2.5rem] p-8 text-white shadow-xl relative flex flex-col items-center text-center justify-center overflow-hidden">
+        <div className="lg:col-span-4 bg-slate-900 dark:bg-slate-950 rounded-[2.5rem] p-7 text-white shadow-xl relative flex flex-col items-center text-center justify-center overflow-hidden min-h-[280px]">
           <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent"></div>
-          <div className="size-20 rounded-3xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-2xl shadow-amber-500/30 mb-8 relative z-10">
-             <span className="material-symbols-outlined text-4xl text-white font-black">workspace_premium</span>
+          <div className="size-16 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-2xl shadow-amber-500/30 mb-6 relative z-10">
+             <span className="material-symbols-outlined text-3xl text-white font-black">workspace_premium</span>
           </div>
-          <h4 className="text-2xl font-black tracking-tighter uppercase relative z-10">5,280 <span className="text-sm font-bold text-amber-500">POINTS</span></h4>
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2 relative z-10">Tier Reward Progress</p>
-          <div className="w-full max-w-[200px] h-2 bg-white/5 rounded-full mt-6 overflow-hidden relative z-10">
+          <h4 className="text-xl font-black tracking-tighter uppercase relative z-10">5,280 <span className="text-xs font-bold text-amber-500">POINTS</span></h4>
+          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1.5 relative z-10">Tier Reward Progress</p>
+          <div className="w-full max-w-[160px] h-1.5 bg-white/5 rounded-full mt-4 overflow-hidden relative z-10">
              <div className="h-full bg-amber-500 rounded-full" style={{ width: '72%' }}></div>
           </div>
-          <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-4 relative z-10">1,420 PTS TO PLATINUM</p>
+          <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-3 relative z-10">1,420 PTS TO PLATINUM</p>
         </div>
       </div>
 
@@ -484,45 +497,45 @@ const GuestPortalPage: React.FC<GuestPortalPageProps> = ({ user, onLogout }) => 
 
   return (
     <div className="space-y-8 pb-12 animate-in fade-in duration-700">
-      <section className="relative overflow-hidden bg-slate-900 dark:bg-slate-950 rounded-[3rem] p-5 sm:p-8 lg:p-14 text-white shadow-2xl mb-6 sm:mb-12 animate-in slide-in-from-top-4 duration-1000">
-        <div className="absolute top-0 right-0 -mt-20 -mr-20 size-[30rem] bg-primary/20 rounded-full blur-[120px]"></div>
-        <div className="absolute bottom-0 left-0 -mb-20 -ml-20 size-[25rem] bg-indigo-500/10 rounded-full blur-[100px]"></div>
+      <section className="relative overflow-hidden bg-slate-900 dark:bg-slate-950 rounded-[2.5rem] p-5 sm:p-7 lg:p-10 text-white shadow-2xl mb-6 sm:mb-10 animate-in slide-in-from-top-4 duration-1000">
+        <div className="absolute top-0 right-0 -mt-20 -mr-20 size-[25rem] bg-primary/20 rounded-full blur-[100px]"></div>
+        <div className="absolute bottom-0 left-0 -mb-20 -ml-20 size-[20rem] bg-indigo-500/10 rounded-full blur-[80px]"></div>
         
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 sm:gap-12">
-          <div className="space-y-6">
-            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
-               <span className="relative flex h-2.5 w-2.5">
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 sm:gap-10">
+          <div className="space-y-5">
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
+               <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
                </span>
-               <span className="text-[11px] font-black uppercase tracking-[0.25em] text-white/80">Digital Butler Active</span>
+               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/80">Digital Butler Active</span>
             </div>
-            <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black tracking-tight leading-none text-white">
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-white">
                The Guest <span className="text-primary tracking-tighter italic">Experience.</span>
             </h1>
-            <p className="text-slate-400 font-medium max-w-xl text-sm sm:text-xl leading-relaxed">
+            <p className="text-slate-400 font-medium max-w-lg text-sm sm:text-base lg:text-lg leading-relaxed">
                Welcome back, <span className="text-white font-black">{user?.name?.split(' ')[0]}</span>. Your world of hospitality, seamlessly integrated and perfectly tailored to your needs.
             </p>
-            <div className="flex flex-wrap gap-4 pt-4">
+            <div className="flex flex-wrap gap-3.5 pt-2">
               <button 
                 onClick={() => setShowChat(!showChat)} 
-                className="group h-14 px-8 bg-primary rounded-2xl text-white text-[11px] font-black uppercase tracking-widest shadow-2xl shadow-primary/30 hover:shadow-primary/50 hover:translate-y-[-2px] active:translate-y-0 transition-all flex items-center gap-4"
+                className="group h-12 px-6 bg-primary rounded-xl text-white text-[10px] font-black uppercase tracking-widest shadow-2xl shadow-primary/30 hover:shadow-primary/50 hover:translate-y-[-2px] active:translate-y-0 transition-all flex items-center gap-3"
               >
-                <div className="size-6 bg-white/20 rounded-lg flex items-center justify-center group-hover:rotate-12 transition-transform">
-                   <span className="material-symbols-outlined text-sm font-black">chat_bubble</span>
+                <div className="size-5 bg-white/20 rounded-md flex items-center justify-center group-hover:rotate-12 transition-transform">
+                   <span className="material-symbols-outlined text-xs font-black">chat_bubble</span>
                 </div>
                 Concierge Live Chat
               </button>
               <button 
                  onClick={() => setShowFeedbackModal(true)}
-                 className="h-14 px-8 bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md rounded-2xl text-white text-[11px] font-black uppercase tracking-widest transition-all"
+                 className="h-12 px-6 bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md rounded-xl text-white text-[10px] font-black uppercase tracking-widest transition-all"
               >
                  Rate Your Stay
               </button>
             </div>
           </div>
           
-          <div className="grid grid-cols-4 gap-1 sm:gap-3 lg:w-[26rem] shrink-0 p-1.5 sm:p-2 bg-white/5 rounded-[1.8rem] sm:rounded-[2.8rem] border border-white/10 backdrop-blur-xl">
+          <div className="grid grid-cols-4 gap-1 sm:gap-2.5 lg:w-[24rem] shrink-0 p-1.5 bg-white/5 rounded-[1.8rem] sm:rounded-[2.4rem] border border-white/10 backdrop-blur-xl">
             {[
                { id: 'home', label: 'Home', icon: 'auto_awesome' },
                { id: 'services', label: 'Services', icon: 'room_service' },
@@ -532,15 +545,15 @@ const GuestPortalPage: React.FC<GuestPortalPageProps> = ({ user, onLogout }) => 
               <button 
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as PortalTab)} 
-                className={`flex flex-col items-center justify-center gap-1.5 sm:gap-3 h-20 sm:h-32 rounded-2xl sm:rounded-[2rem] transition-all relative overflow-hidden group ${
+                className={`flex flex-col items-center justify-center gap-1 sm:gap-2.5 h-16 sm:h-28 rounded-xl sm:rounded-[1.8rem] transition-all relative overflow-hidden group ${
                    activeTab === tab.id 
-                    ? 'bg-white text-slate-900 shadow-[0_20px_50px_rgba(0,0,0,0.3)]' 
+                    ? 'bg-white text-slate-900 shadow-[0_15px_40px_rgba(0,0,0,0.3)]' 
                     : 'text-white/60 hover:text-white hover:bg-white/10'
                 }`}
               >
                 {activeTab === tab.id && <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>}
-                <span className={`material-symbols-outlined text-xl sm:text-3xl font-black transition-all duration-500 ${activeTab === tab.id ? 'text-primary scale-110' : 'text-slate-400 group-hover:text-white group-hover:scale-110'}`}>{tab.icon}</span>
-                <span className={`text-[8px] sm:text-[10px] font-black uppercase tracking-widest sm:tracking-[0.1em] whitespace-nowrap transition-all duration-500 ${activeTab === tab.id ? 'opacity-100' : 'opacity-80 group-hover:opacity-100'}`}>{tab.label}</span>
+                <span className={`material-symbols-outlined text-lg sm:text-2xl font-black transition-all duration-500 ${activeTab === tab.id ? 'text-primary scale-110' : 'text-slate-400 group-hover:text-white group-hover:scale-110'}`}>{tab.icon}</span>
+                <span className={`text-[7px] sm:text-[9px] font-black uppercase tracking-widest sm:tracking-[0.05em] whitespace-nowrap transition-all duration-500 ${activeTab === tab.id ? 'opacity-100' : 'opacity-80 group-hover:opacity-100'}`}>{tab.label}</span>
               </button>
             ))}
           </div>
@@ -663,6 +676,53 @@ const GuestPortalPage: React.FC<GuestPortalPageProps> = ({ user, onLogout }) => 
                 <span className="material-symbols-outlined text-lg">send</span>
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      {/* Edit Profile Modal */}
+      {showEditProfile && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowEditProfile(false)}>
+          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-300" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Edit Profile</h3>
+              <button onClick={() => setShowEditProfile(false)} className="size-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500">
+                <span className="material-symbols-outlined text-sm">close</span>
+              </button>
+            </div>
+            <form onSubmit={handleUpdateProfile} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
+                <input 
+                  type="text" 
+                  value={profileFormData.name} 
+                  onChange={e => setProfileFormData({...profileFormData, name: e.target.value})}
+                  className="w-full p-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/30 outline-none transition-all dark:text-white" 
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
+                <input 
+                  type="email" 
+                  value={profileFormData.email} 
+                  onChange={e => setProfileFormData({...profileFormData, email: e.target.value})}
+                  className="w-full p-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/30 outline-none transition-all dark:text-white" 
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
+                <input 
+                  type="tel" 
+                  placeholder="+1 (555) 000-0000"
+                  value={profileFormData.phone} 
+                  onChange={e => setProfileFormData({...profileFormData, phone: e.target.value})}
+                  className="w-full p-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/30 outline-none transition-all dark:text-white" 
+                />
+              </div>
+              <div className="pt-4 flex gap-3">
+                <button type="button" onClick={() => setShowEditProfile(false)} className="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-200 transition-all">Cancel</button>
+                <button type="submit" className="flex-1 py-3.5 bg-primary text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all">Save Changes</button>
+              </div>
+            </form>
           </div>
         </div>
       )}
