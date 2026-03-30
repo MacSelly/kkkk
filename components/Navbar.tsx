@@ -93,7 +93,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onSidebarToggle }) => {
           </button>
 
           {isNotificationsOpen && (
-            <div className="absolute right-0 mt-3 w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-[100]">
+          <div className="absolute right-0 sm:right-0 mt-3 w-[calc(100vw-2rem)] sm:w-80 max-w-[320px] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-[100]">
               <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/50">
                 <h3 className="text-sm font-black text-slate-900 dark:text-white">Recent Activity</h3>
               </div>

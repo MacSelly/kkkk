@@ -126,11 +126,11 @@ const FinancePage: React.FC = () => {
           <h1 className="text-4xl font-black tracking-tighter text-slate-900 dark:text-white leading-none">Financial Intelligence</h1>
           <p className="text-slate-500 dark:text-slate-400 mt-2 font-medium">Real-time revenue monitoring and transaction reconciliation.</p>
         </div>
-        <div className="flex gap-3 shrink-0">
+        <div className="flex flex-wrap gap-2 sm:gap-3 shrink-0">
           <button 
             onClick={handleExport}
             disabled={isExporting}
-            className="h-12 px-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-slate-50 transition-all shadow-sm disabled:opacity-50"
+            className="h-10 sm:h-12 px-3 sm:px-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-slate-50 transition-all shadow-sm disabled:opacity-50"
           >
             <span className={`material-symbols-outlined text-[20px] ${isExporting ? 'animate-spin' : ''}`}>
               {isExporting ? 'sync' : 'file_download'}
@@ -139,7 +139,7 @@ const FinancePage: React.FC = () => {
           </button>
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="h-12 px-6 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
+            className="h-10 sm:h-12 px-3 sm:px-6 bg-primary text-white text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
           >
             New Transaction
           </button>
@@ -147,9 +147,9 @@ const FinancePage: React.FC = () => {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {stats.map((s, i) => (
-          <div key={i} className="bg-white dark:bg-slate-800 p-6 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col gap-1 hover:shadow-lg transition-all group">
+          <div key={i} className="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col gap-1 hover:shadow-lg transition-all group">
             <div className="flex items-center justify-between mb-2">
               <div className={`size-12 rounded-2xl ${s.bg} ${s.color} flex items-center justify-center transition-transform group-hover:scale-110`}>
                 <span className="material-symbols-outlined text-[24px]">{s.icon}</span>
@@ -166,7 +166,7 @@ const FinancePage: React.FC = () => {
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-7 bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-200 dark:border-slate-700 p-8 shadow-sm flex flex-col min-h-[520px]">
+        <div className="lg:col-span-7 bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-200 dark:border-slate-700 p-4 sm:p-8 shadow-sm flex flex-col min-h-[360px] sm:min-h-[520px]">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
             <div>
               <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Revenue Stream</h3>
@@ -208,7 +208,7 @@ const FinancePage: React.FC = () => {
         </div>
 
         {/* Intelligence Source Mix */}
-        <div className="lg:col-span-5 bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-200 dark:border-slate-700 p-8 flex flex-col shadow-sm min-h-[520px]">
+        <div className="lg:col-span-5 bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-200 dark:border-slate-700 p-4 sm:p-8 flex flex-col shadow-sm min-h-[400px] sm:min-h-[520px]">
           <div className="flex items-center justify-between mb-6">
             <div>
                <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight uppercase">Source Mix</h3>
@@ -270,14 +270,14 @@ const FinancePage: React.FC = () => {
 
       {/* Transaction Ledger */}
       <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
+        <div className="p-4 sm:p-8 border-b border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Unified Ledger</h3>
             <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">Recent Cash Flow Events</p>
           </div>
         </div>
         <div className="overflow-x-auto custom-scrollbar">
-          <table className="w-full text-left border-collapse min-w-[1000px]">
+          <table className="w-full text-left border-collapse min-w-[800px] lg:min-w-[1000px]">
             <thead>
               <tr className="bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-800">
                 <th className="p-6 text-[10px] font-black uppercase tracking-widest text-slate-400">ID & Guest</th>

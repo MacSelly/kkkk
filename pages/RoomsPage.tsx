@@ -105,7 +105,7 @@ const RoomsPage: React.FC = () => {
         </div>
         <button 
           onClick={() => setIsRegisterModalOpen(true)}
-          className="bg-primary hover:bg-blue-600 text-white flex items-center justify-center gap-3 px-6 py-3 rounded-2xl text-xs font-black shadow-xl shadow-primary/20 transition-all active:scale-95 shrink-0 uppercase tracking-widest"
+          className="bg-primary hover:bg-blue-600 text-white flex items-center justify-center gap-2 sm:gap-3 px-3 sm:px-6 py-3 rounded-2xl text-[10px] sm:text-xs font-black shadow-xl shadow-primary/20 transition-all active:scale-95 shrink-0 uppercase tracking-widest"
         >
           <span className="material-symbols-outlined text-[20px]">add_box</span>
           <span>Register New Room</span>
@@ -113,9 +113,9 @@ const RoomsPage: React.FC = () => {
       </div>
 
       {/* Modern KPI Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {stats.map((s, i) => (
-          <div key={i} className="bg-white dark:bg-slate-800 p-6 rounded-[2rem] border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col gap-1 transition-all hover:shadow-lg group">
+          <div key={i} className="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-[2rem] border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col gap-1 transition-all hover:shadow-lg group">
             <div className="flex items-center justify-between mb-2">
               <div className={`size-10 rounded-xl ${s.bg} ${s.color} flex items-center justify-center`}>
                 <span className="material-symbols-outlined text-[20px]">{s.icon}</span>
@@ -157,7 +157,7 @@ const RoomsPage: React.FC = () => {
       {/* Room Table Grid */}
       <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
         <div className="overflow-x-auto custom-scrollbar">
-          <table className="w-full text-left border-collapse min-w-[1000px]">
+          <table className="w-full text-left border-collapse min-w-[800px] lg:min-w-[1000px]">
             <thead>
               <tr className="bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-800">
                 <th className="p-6 text-[10px] font-black uppercase tracking-widest text-slate-400">Room Info</th>

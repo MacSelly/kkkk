@@ -81,7 +81,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
       </div>
 
       {/* Right Side: Login Form */}
-      <div className="flex-1 flex flex-col justify-center px-4 py-8 sm:px-6 lg:flex-none lg:px-20 xl:px-24 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 w-full lg:w-[45%] xl:w-[40%] relative z-10 shadow-xl overflow-hidden">
+      <div className="flex-1 flex flex-col justify-center px-4 py-6 sm:px-6 sm:py-8 lg:flex-none lg:px-20 xl:px-24 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 w-full lg:w-[45%] xl:w-[40%] relative z-10 shadow-xl overflow-y-auto">
         <div className="mx-auto w-full max-w-sm lg:w-96">
           {/* Header / Logo */}
           <div className="flex items-center gap-3 mb-10">

@@ -114,12 +114,12 @@ const FrontDeskPage: React.FC<FrontDeskPageProps> = ({ onLogout }) => {
 
           {/* Dynamic Filter Strip */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8">
-            <div className="flex bg-white dark:bg-slate-900 p-1 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="flex bg-white dark:bg-slate-900 p-1 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-x-auto scrollbar-hide">
               {(['ALL', RoomStatus.AVAILABLE, RoomStatus.OCCUPIED, RoomStatus.CLEANING, RoomStatus.MAINTENANCE] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setFilterTab(tab)}
-                  className={`px-6 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${filterTab === tab ? 'bg-primary text-white shadow-lg' : 'text-slate-400 hover:text-slate-600'}`}
+                  className={`px-3 sm:px-6 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all whitespace-nowrap ${filterTab === tab ? 'bg-primary text-white shadow-lg' : 'text-slate-400 hover:text-slate-600'}`}
                 >
                   {tab === 'ALL' ? 'Everything' : tab}
                 </button>
@@ -131,7 +131,7 @@ const FrontDeskPage: React.FC<FrontDeskPageProps> = ({ onLogout }) => {
           </div>
 
           {/* High-Fidelity Room Grid */}
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fill,minmax(240px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-4 sm:gap-6">
             {filteredRooms.map((room) => {
               const isSelected = selectedRoomId === room.id;
               const guest = getGuestForRoom(room.number);
@@ -212,20 +212,20 @@ const FrontDeskPage: React.FC<FrontDeskPageProps> = ({ onLogout }) => {
       `}>
         {selectedRoom ? (
           <>
-            <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0">
+            <div className="p-4 sm:p-8 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0">
               <button 
                 onClick={() => setSelectedRoomId(null)}
                 className="size-12 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-rose-500 transition-all border border-slate-100 dark:border-slate-700 shadow-sm"
               >
                 <span className="material-symbols-outlined">close</span>
               </button>
-              <div className="flex items-center gap-4">
-                 <button onClick={() => setShowAuditHistory(true)} className="h-12 px-6 bg-slate-100 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors active:scale-95">Audit History</button>
-                 <button onClick={() => setShowManageRoom(true)} className="h-12 px-6 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-primary/20 hover:shadow-xl transition-all active:scale-95">Manage Room</button>
+              <div className="flex items-center gap-2 sm:gap-4">
+                 <button onClick={() => setShowAuditHistory(true)} className="h-10 sm:h-12 px-3 sm:px-6 bg-slate-100 dark:bg-slate-800 text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors active:scale-95">Audit History</button>
+                 <button onClick={() => setShowManageRoom(true)} className="h-10 sm:h-12 px-3 sm:px-6 bg-primary text-white text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-primary/20 hover:shadow-xl transition-all active:scale-95">Manage Room</button>
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-10 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-5 sm:p-10 custom-scrollbar">
               <div className="space-y-12 animate-in fade-in slide-in-from-right-8 duration-500">
                 
                 {/* Visual Room Summary */}

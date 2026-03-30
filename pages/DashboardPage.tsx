@@ -42,7 +42,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ userRole }) => {
     <div className="space-y-8 pb-12 animate-in fade-in duration-700">
       
       {/* Welcome Hero Section */}
-      <section className="relative overflow-hidden bg-slate-900 dark:bg-slate-950 rounded-[2.5rem] p-8 lg:p-12 text-white shadow-2xl">
+      <section className="relative overflow-hidden bg-slate-900 dark:bg-slate-950 rounded-[2.5rem] p-5 sm:p-8 lg:p-12 text-white shadow-2xl">
         <div className="absolute top-0 right-0 -mt-20 -mr-20 size-80 bg-primary/20 rounded-full blur-[100px]"></div>
         <div className="absolute bottom-0 left-0 -mb-20 -ml-20 size-60 bg-indigo-500/10 rounded-full blur-[80px]"></div>
         
@@ -55,13 +55,13 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ userRole }) => {
               </span>
               <span className="text-[10px] font-black uppercase tracking-[0.2em]">Live System Active</span>
             </div>
-            <h1 className="text-4xl lg:text-5xl font-black tracking-tight leading-tight">
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
               {t('welcomeMessage')} <span className="text-primary">{userRole === UserRole.ADMIN ? 'James Anderson' : userRole === UserRole.MANAGER ? 'Sarah Jenkins' : 'Alex Rivera'}</span>
             </h1>
             <p className="text-slate-400 font-medium max-w-lg text-lg">
               {t('daySummary')}
             </p>
-            <div className="flex flex-wrap gap-4 pt-2">
+            <div className="flex flex-wrap gap-3 sm:gap-4 pt-2">
               <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-2xl">
                 <span className="material-symbols-outlined text-primary">flight_land</span>
                 <div>
@@ -86,7 +86,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ userRole }) => {
             </div>
           </div>
           
-          <div className="grid grid-cols-2 gap-3 lg:w-72 shrink-0">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:w-72 shrink-0">
             <button 
               onClick={() => navigate('/bookings')}
               className="flex flex-col items-center justify-center gap-2 p-4 bg-primary text-white rounded-3xl shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all transform-gpu will-change-transform"
@@ -121,7 +121,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ userRole }) => {
       </section>
 
       {/* KPI Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
         {[
           { label: t('revenueToday'), value: '$8,420', icon: 'account_balance_wallet', trend: '↑ 12%', color: 'blue', hidden: isReceptionist },
           { label: t('adr'), value: '$245', icon: 'payments', trend: '↑ 2%', color: 'violet', hidden: isReceptionist },
@@ -131,7 +131,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ userRole }) => {
           { label: 'Maintenance', value: '02', icon: 'build', trend: 'Critical', color: 'violet', hidden: !isReceptionist },
           { label: 'Waitlist', value: '11', icon: 'hourglass_empty', trend: '↑ 8%', color: 'indigo', hidden: !isReceptionist },
         ].filter(kpi => !kpi.hidden).map((kpi, idx) => (
-          <div key={idx} className="bg-white dark:bg-slate-800 p-6 rounded-[2rem] border border-slate-100 dark:border-slate-700 shadow-sm group hover:border-primary transition-all hover:shadow-xl">
+          <div key={idx} className="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-[2rem] border border-slate-100 dark:border-slate-700 shadow-sm group hover:border-primary transition-all hover:shadow-xl">
             <div className={`size-12 rounded-2xl mb-4 flex items-center justify-center 
               ${kpi.color === 'rose' ? 'bg-rose-50 text-rose-500 dark:bg-rose-900/20' : 
                 kpi.color === 'blue' ? 'bg-blue-50 text-blue-500 dark:bg-blue-900/20' :
@@ -152,7 +152,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ userRole }) => {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {!isReceptionist ? (
-          <div className="lg:col-span-8 bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-200 dark:border-slate-700 p-8 shadow-sm flex flex-col">
+          <div className="lg:col-span-8 bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-200 dark:border-slate-700 p-4 sm:p-8 shadow-sm flex flex-col">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
               <div>
                 <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight uppercase">Performance Analytics</h3>
@@ -174,7 +174,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ userRole }) => {
                 ))}
               </div>
             </div>
-            <div className="flex-1 min-h-[380px]">
+            <div className="flex-1 min-h-[260px] sm:min-h-[380px]">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={revenueData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <defs>
@@ -224,7 +224,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ userRole }) => {
           </div>
         )}
 
-        <div className="lg:col-span-4 bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-200 dark:border-slate-700 p-8 flex flex-col shadow-sm min-h-[500px]">
+        <div className="lg:col-span-4 bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-200 dark:border-slate-700 p-5 sm:p-8 flex flex-col shadow-sm min-h-[400px] sm:min-h-[500px]">
           <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight mb-8 uppercase tracking-widest">{t('inventory')}</h3>
           <div className="flex-1 min-h-[280px] relative">
             <ResponsiveContainer width="100%" height="100%">

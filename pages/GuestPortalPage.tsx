@@ -131,7 +131,7 @@ const GuestPortalPage: React.FC<GuestPortalPageProps> = ({ user, onLogout }) => 
       <div className="relative group">
         <div className="absolute -inset-1 bg-gradient-to-r from-primary to-cyan-500 rounded-[2.5rem] blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
         <div className="relative bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-100 dark:border-slate-700/50 shadow-xl overflow-hidden p-8">
-          <div className="flex flex-col lg:flex-row gap-8 items-center justify-between">
+          <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 items-center justify-between">
             <div className="space-y-6 flex-1 text-center lg:text-left">
               <div>
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">{activeBooking?.room.type || 'LUXURY SUITE'}</p>
@@ -148,7 +148,7 @@ const GuestPortalPage: React.FC<GuestPortalPageProps> = ({ user, onLogout }) => 
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pt-2">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 pt-2">
                 <div>
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Check-in</p>
                   <p className="text-sm font-black text-slate-900 dark:text-white">{activeBooking?.checkIn || '--'}</p>
@@ -178,7 +178,7 @@ const GuestPortalPage: React.FC<GuestPortalPageProps> = ({ user, onLogout }) => 
               </div>
             </div>
 
-            <div className="lg:w-80 w-full shrink-0 flex flex-col gap-4">
+            <div className="lg:w-80 w-full shrink-0 flex flex-col gap-3 sm:gap-4">
               <button 
                 onClick={handleUnlockDoor}
                 className={`relative w-full h-32 rounded-3xl font-black text-sm uppercase tracking-[0.15em] transition-all transform-gpu active:scale-95 group overflow-hidden ${
@@ -301,7 +301,7 @@ const GuestPortalPage: React.FC<GuestPortalPageProps> = ({ user, onLogout }) => 
         </div>
       </div>
       
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {serviceCategories.map(cat => (
           <button 
             key={cat.id} 
@@ -484,11 +484,11 @@ const GuestPortalPage: React.FC<GuestPortalPageProps> = ({ user, onLogout }) => 
 
   return (
     <div className="space-y-8 pb-12 animate-in fade-in duration-700">
-      <section className="relative overflow-hidden bg-slate-900 dark:bg-slate-950 rounded-[3rem] p-10 lg:p-14 text-white shadow-2xl mb-12 animate-in slide-in-from-top-4 duration-1000">
+      <section className="relative overflow-hidden bg-slate-900 dark:bg-slate-950 rounded-[3rem] p-5 sm:p-8 lg:p-14 text-white shadow-2xl mb-6 sm:mb-12 animate-in slide-in-from-top-4 duration-1000">
         <div className="absolute top-0 right-0 -mt-20 -mr-20 size-[30rem] bg-primary/20 rounded-full blur-[120px]"></div>
         <div className="absolute bottom-0 left-0 -mb-20 -ml-20 size-[25rem] bg-indigo-500/10 rounded-full blur-[100px]"></div>
         
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-12">
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 sm:gap-12">
           <div className="space-y-6">
             <div className="inline-flex items-center gap-3 px-4 py-2 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
                <span className="relative flex h-2.5 w-2.5">
@@ -497,10 +497,10 @@ const GuestPortalPage: React.FC<GuestPortalPageProps> = ({ user, onLogout }) => 
                </span>
                <span className="text-[11px] font-black uppercase tracking-[0.25em] text-white/80">Digital Butler Active</span>
             </div>
-            <h1 className="text-5xl lg:text-7xl font-black tracking-tight leading-none text-white">
+            <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black tracking-tight leading-none text-white">
                The Guest <span className="text-primary tracking-tighter italic">Experience.</span>
             </h1>
-            <p className="text-slate-400 font-medium max-w-xl text-xl leading-relaxed">
+            <p className="text-slate-400 font-medium max-w-xl text-sm sm:text-xl leading-relaxed">
                Welcome back, <span className="text-white font-black">{user?.name?.split(' ')[0]}</span>. Your world of hospitality, seamlessly integrated and perfectly tailored to your needs.
             </p>
             <div className="flex flex-wrap gap-4 pt-4">
@@ -522,7 +522,7 @@ const GuestPortalPage: React.FC<GuestPortalPageProps> = ({ user, onLogout }) => 
             </div>
           </div>
           
-          <div className="grid grid-cols-2 gap-4 lg:w-[22rem] shrink-0 p-2 bg-white/5 rounded-[2.5rem] border border-white/5 backdrop-blur-md">
+          <div className="grid grid-cols-4 gap-1 sm:gap-3 lg:w-[26rem] shrink-0 p-1.5 sm:p-2 bg-white/5 rounded-[1.8rem] sm:rounded-[2.8rem] border border-white/10 backdrop-blur-xl">
             {[
                { id: 'home', label: 'Home', icon: 'auto_awesome' },
                { id: 'services', label: 'Services', icon: 'room_service' },
@@ -532,15 +532,15 @@ const GuestPortalPage: React.FC<GuestPortalPageProps> = ({ user, onLogout }) => 
               <button 
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as PortalTab)} 
-                className={`flex flex-col items-center justify-center gap-3 h-32 rounded-3xl transition-all relative overflow-hidden group ${
+                className={`flex flex-col items-center justify-center gap-1.5 sm:gap-3 h-20 sm:h-32 rounded-2xl sm:rounded-[2rem] transition-all relative overflow-hidden group ${
                    activeTab === tab.id 
-                    ? 'bg-white text-slate-900 shadow-2xl scale-100' 
-                    : 'text-white hover:bg-white/10 hover:translate-y-[-2px]'
+                    ? 'bg-white text-slate-900 shadow-[0_20px_50px_rgba(0,0,0,0.3)]' 
+                    : 'text-white/60 hover:text-white hover:bg-white/10'
                 }`}
               >
                 {activeTab === tab.id && <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>}
-                <span className={`material-symbols-outlined text-3xl font-black transition-all ${activeTab === tab.id ? 'text-primary scale-110' : 'text-slate-500 group-hover:text-white'}`}>{tab.icon}</span>
-                <span className="text-[10px] font-black uppercase tracking-[0.2em]">{tab.label}</span>
+                <span className={`material-symbols-outlined text-xl sm:text-3xl font-black transition-all duration-500 ${activeTab === tab.id ? 'text-primary scale-110' : 'text-slate-400 group-hover:text-white group-hover:scale-110'}`}>{tab.icon}</span>
+                <span className={`text-[8px] sm:text-[10px] font-black uppercase tracking-widest sm:tracking-[0.1em] whitespace-nowrap transition-all duration-500 ${activeTab === tab.id ? 'opacity-100' : 'opacity-80 group-hover:opacity-100'}`}>{tab.label}</span>
               </button>
             ))}
           </div>

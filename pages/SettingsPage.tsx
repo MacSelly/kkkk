@@ -99,7 +99,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ userRole }) => {
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     className={`
-                      flex items-center gap-4 px-6 py-4 rounded-[1.75rem] transition-all duration-300 relative group overflow-hidden
+                      flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-3 sm:py-4 rounded-[1.75rem] transition-all duration-300 relative group overflow-hidden whitespace-nowrap shrink-0 lg:shrink
                       ${activeTab === tab.id
                         ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-2xl'
                         : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-slate-800/80'}
@@ -108,7 +108,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ userRole }) => {
                     <span className={`material-symbols-outlined text-[24px] ${activeTab === tab.id ? 'scale-110' : 'group-hover:scale-110'} transition-transform`}>
                       {tab.icon}
                     </span>
-                    <span className="text-xs font-black uppercase tracking-widest">{tab.label}</span>
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider sm:tracking-widest">{tab.label}</span>
                     {activeTab === tab.id && (
                       <div className="absolute right-0 top-0 h-full w-1 bg-primary/40 blur-sm"></div>
                     )}
@@ -140,7 +140,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ userRole }) => {
                   </div>
                 </div>
 
-                <div className="p-10 space-y-10">
+                <div className="p-5 sm:p-10 space-y-6 sm:space-y-10">
                   {/* Modern Dark Mode Group */}
                   <div className="group flex flex-col sm:flex-row sm:items-center justify-between p-8 rounded-[2rem] bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100/50 dark:border-slate-700/30 hover:bg-white dark:hover:bg-slate-800/50 transition-all duration-300">
                     <div className="flex gap-6 items-center">

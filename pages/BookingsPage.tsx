@@ -146,11 +146,11 @@ const BookingsPage: React.FC = () => {
             <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">{t('reservations')}</h2>
             <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 font-medium">{t('bookingsSummary')}</p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-2 sm:gap-3">
             <button 
               onClick={handleExportPDF}
               disabled={isExporting}
-              className="flex h-11 items-center justify-center gap-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-5 text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm transition-all disabled:opacity-50"
+              className="flex h-10 sm:h-11 items-center justify-center gap-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 sm:px-5 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm transition-all disabled:opacity-50"
             >
               <span className={`material-symbols-outlined text-[20px] ${isExporting ? 'animate-spin' : ''}`}>
                 {isExporting ? 'sync' : 'file_download'}
@@ -159,7 +159,7 @@ const BookingsPage: React.FC = () => {
             </button>
             <button 
               onClick={() => setIsNewBookingModalOpen(true)}
-              className="flex h-11 items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-black text-white shadow-xl shadow-blue-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-widest"
+              className="flex h-10 sm:h-11 items-center justify-center gap-2 rounded-xl bg-primary px-3 sm:px-6 text-xs sm:text-sm font-black text-white shadow-xl shadow-blue-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-widest"
             >
               <span className="material-symbols-outlined text-[20px]">add</span>
               {t('newBooking')}
@@ -195,13 +195,13 @@ const BookingsPage: React.FC = () => {
             />
           </div>
           
-          <div className="flex items-center gap-3 w-full md:w-auto">
-            <div className="flex bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200/50 dark:border-slate-700/50">
+            <div className="flex items-center gap-2 sm:gap-3 w-full md:w-auto overflow-x-auto scrollbar-hide">
+              <div className="flex bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200/50 dark:border-slate-700/50 shrink-0">
               {(['ALL', BookingStatus.CONFIRMED, BookingStatus.PENDING, BookingStatus.CHECKED_IN] as const).map((status) => (
                 <button
                   key={status}
                   onClick={() => setStatusFilter(status)}
-                  className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${statusFilter === status ? 'bg-white dark:bg-slate-800 text-primary shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                  className={`px-2 sm:px-4 py-2 text-[9px] sm:text-[10px] font-black uppercase tracking-wider sm:tracking-widest rounded-lg transition-all whitespace-nowrap ${statusFilter === status ? 'bg-white dark:bg-slate-800 text-primary shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
                 >
                   {status === 'ALL' ? 'All' : status.replace('_', ' ')}
                 </button>
@@ -225,7 +225,7 @@ const BookingsPage: React.FC = () => {
         {viewMode === 'list' ? (
           <div className="flex-1 overflow-hidden rounded-[2rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 shadow-sm flex flex-col">
             <div className="overflow-x-auto custom-scrollbar">
-              <table className="w-full text-left border-collapse min-w-[1100px]">
+              <table className="w-full text-left border-collapse min-w-[900px] lg:min-w-[1100px]">
                 <thead>
                   <tr className="bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-800">
                     <th className="p-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Guest & Reference</th>
