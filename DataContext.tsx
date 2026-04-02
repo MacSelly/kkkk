@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import { GUESTS as INITIAL_GUESTS, ROOMS as INITIAL_ROOMS, BOOKINGS as INITIAL_BOOKINGS, ACTIVITIES as INITIAL_ACTIVITIES } from './constants.tsx';
-import { Guest, Room, Booking, Activity, RoomStatus, BookingStatus, PaymentStatus } from './types.ts';
+import { Guest, Room, Booking, Activity, RoomStatus, BookingStatus, PaymentStatus, Incident } from './types.ts';
 
 // ————— Context Types —————
 
@@ -24,6 +24,11 @@ interface DataContextType {
   // Activities
   activities: Activity[];
   addActivity: (activity: Activity) => void;
+
+  // Incidents
+  incidents: Incident[];
+  addIncident: (incident: Incident) => void;
+  updateIncident: (id: string, updates: Partial<Incident>) => void;
 
   // Transactions (Finance)
   transactions: Transaction[];
@@ -61,6 +66,30 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [rooms, setRooms] = useState<Room[]>(INITIAL_ROOMS);
   const [bookings, setBookings] = useState<Booking[]>(INITIAL_BOOKINGS);
   const [activities, setActivities] = useState<Activity[]>(INITIAL_ACTIVITIES);
+  const [incidents, setIncidents] = useState<Incident[]>([
+    {
+      id: 'INC-001',
+      roomId: 'r102',
+      roomNumber: '102',
+      category: 'plumbing',
+      priority: 'high',
+      description: 'Leaking faucet in the bathroom',
+      reportedBy: 'Housekeeping',
+      timestamp: 'Oct 30, 2024, 9:20 AM',
+      status: 'pending'
+    },
+    {
+      id: 'INC-002',
+      roomId: 'r304',
+      roomNumber: '304',
+      category: 'electrical',
+      priority: 'normal',
+      description: 'AC remote not working',
+      reportedBy: 'Guest',
+      timestamp: 'Oct 29, 2024, 2:15 PM',
+      status: 'in-progress'
+    }
+  ]);
   const [transactions, setTransactions] = useState<Transaction[]>(INITIAL_TRANSACTIONS);
 
   // —— Guest actions ——
@@ -99,6 +128,15 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setActivities(prev => [activity, ...prev]);
   }, []);
 
+  // —— Incident actions ——
+  const addIncident = useCallback((incident: Incident) => {
+    setIncidents(prev => [incident, ...prev]);
+  }, []);
+
+  const updateIncident = useCallback((id: string, updates: Partial<Incident>) => {
+    setIncidents(prev => prev.map(inc => inc.id === id ? { ...inc, ...updates } : inc));
+  }, []);
+
   // —— Transaction actions ——
   const addTransaction = useCallback((tx: Transaction) => {
     setTransactions(prev => [tx, ...prev]);
@@ -114,6 +152,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       rooms, addRoom, updateRoom, setRoomStatus,
       bookings, addBooking, updateBooking,
       activities, addActivity,
+      incidents, addIncident, updateIncident,
       transactions, addTransaction, updateTransaction,
     }}>
       {children}

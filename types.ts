@@ -92,5 +92,17 @@ export interface Activity {
   timestamp: string;
   title: string;
   description: string;
-  type: 'booking' | 'housekeeping' | 'vip' | 'system';
+  type: 'booking' | 'housekeeping' | 'maintenance' | 'vip' | 'system';
+}
+
+export interface Incident {
+  id: string;
+  roomId: string;
+  roomNumber: string;
+  category: string;
+  priority: 'low' | 'normal' | 'high' | 'urgent';
+  description: string;
+  reportedBy: string;
+  timestamp: string;
+  status: 'pending' | 'in-progress' | 'resolved';
 }

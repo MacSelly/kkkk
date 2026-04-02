@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useData } from '../DataContext.tsx';
-import { User, BookingStatus } from '../types.ts';
+import { User, BookingStatus, Incident, RoomStatus } from '../types.ts';
 
 interface GuestPortalPageProps {
   user: User | null;
@@ -18,7 +18,7 @@ interface ServiceRequest {
 }
 
 const GuestPortalPage: React.FC<GuestPortalPageProps> = ({ user, onLogout }) => {
-  const { bookings, rooms } = useData();
+  const { bookings, rooms, addIncident, setRoomStatus } = useData();
   const [activeTab, setActiveTab] = useState<PortalTab>('home');
   const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([
     { id: 'sr1', icon: 'dry_cleaning', label: 'Extra Towels', status: 'completed', time: 'Yesterday, 3:00 PM' },
@@ -26,6 +26,11 @@ const GuestPortalPage: React.FC<GuestPortalPageProps> = ({ user, onLogout }) => 
   ]);
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [showIncidentModal, setShowIncidentModal] = useState(false);
+  const [incidentCategory, setIncidentCategory] = useState('other');
+  const [incidentPriority, setIncidentPriority] = useState<'low' | 'normal' | 'high' | 'urgent'>('normal');
+  const [incidentDescription, setIncidentDescription] = useState('');
+  const [incidentSubmitted, setIncidentSubmitted] = useState(false);
   const [feedbackRating, setFeedbackRating] = useState(0);
   const [feedbackText, setFeedbackText] = useState('');
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
@@ -397,6 +402,33 @@ const GuestPortalPage: React.FC<GuestPortalPageProps> = ({ user, onLogout }) => 
     setShowEditProfile(false);
   };
 
+  const handleReportIncident = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!activeBooking) return;
+    
+    const newIncident: Incident = {
+      id: `INC-${Date.now()}`,
+      roomId: activeBooking.room.id,
+      roomNumber: activeBooking.room.number,
+      category: incidentCategory,
+      priority: incidentPriority,
+      description: incidentDescription,
+      reportedBy: user?.name || 'Guest',
+      timestamp: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }),
+      status: 'pending'
+    };
+    
+    addIncident(newIncident);
+    setRoomStatus(activeBooking.room.id, RoomStatus.MAINTENANCE);
+    setIncidentSubmitted(true);
+    
+    setTimeout(() => {
+      setShowIncidentModal(false);
+      setIncidentSubmitted(false);
+      setIncidentDescription('');
+    }, 2000);
+  };
+
   const renderAccount = () => (
     <div className="space-y-8 animate-in fade-in duration-300">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -527,6 +559,15 @@ const GuestPortalPage: React.FC<GuestPortalPageProps> = ({ user, onLogout }) => 
                 Concierge Live Chat
               </button>
               <button 
+                 onClick={() => setShowIncidentModal(true)}
+                 className="group h-12 px-6 bg-rose-500 rounded-xl text-white text-[10px] font-black uppercase tracking-widest shadow-2xl shadow-rose-500/20 hover:shadow-rose-500/40 hover:translate-y-[-2px] active:translate-y-0 transition-all flex items-center gap-3"
+              >
+                <div className="size-5 bg-white/20 rounded-md flex items-center justify-center group-hover:rotate-12 transition-transform">
+                   <span className="material-symbols-outlined text-xs font-black">report</span>
+                </div>
+                Report Incident
+              </button>
+              <button 
                  onClick={() => setShowFeedbackModal(true)}
                  className="h-12 px-6 bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md rounded-xl text-white text-[10px] font-black uppercase tracking-widest transition-all"
               >
@@ -593,6 +634,83 @@ const GuestPortalPage: React.FC<GuestPortalPageProps> = ({ user, onLogout }) => 
             <div className="p-4 border-t border-slate-100 dark:border-slate-800">
               <button onClick={() => setShowServiceModal(false)} className="w-full py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold hover:bg-slate-200 transition">Cancel</button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Incident Modal */}
+      {showIncidentModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowIncidentModal(false)}>
+          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-300" onClick={e => e.stopPropagation()}>
+            {incidentSubmitted ? (
+              <div className="text-center py-8">
+                <span className="material-symbols-outlined text-6xl text-emerald-500 mb-4">task_alt</span>
+                <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">Issue Reported!</h3>
+                <p className="text-slate-500 text-sm">Our team has been notified and is on the way.</p>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Report Room Issue</h3>
+                  <button onClick={() => setShowIncidentModal(false)} className="size-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500">
+                    <span className="material-symbols-outlined text-sm">close</span>
+                  </button>
+                </div>
+                <p className="text-xs text-slate-500 mb-6">Let us fix any issues in your room ({activeBooking?.room.number})</p>
+
+                <form onSubmit={handleReportIncident} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Issue Category</label>
+                    <select 
+                      value={incidentCategory} 
+                      onChange={e => setIncidentCategory(e.target.value)}
+                      className="w-full p-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/30 outline-none transition-all dark:text-white"
+                    >
+                      <option value="plumbing">Plumbing / Water</option>
+                      <option value="electrical">Electrical / Lights</option>
+                      <option value="hvac">Air Conditioning / Heating</option>
+                      <option value="technical">WiFi / TV / Technical</option>
+                      <option value="room">Room Furniture / Fixes</option>
+                      <option value="other">Other Issue</option>
+                    </select>
+                  </div>
+                  
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Priority</label>
+                    <div className="flex gap-2">
+                      {(['low', 'normal', 'high', 'urgent'] as const).map(p => (
+                        <button
+                          key={p}
+                          type="button"
+                          onClick={() => setIncidentPriority(p)}
+                          className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase transition-all ${
+                            incidentPriority === p 
+                              ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20' 
+                              : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
+                          }`}
+                        >{p}</button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Describe what's wrong</label>
+                    <textarea 
+                      required
+                      value={incidentDescription} 
+                      onChange={e => setIncidentDescription(e.target.value)}
+                      placeholder="Please provide details..."
+                      className="w-full p-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm resize-none h-24 focus:ring-2 focus:ring-primary/50 outline-none transition-all dark:text-white"
+                    />
+                  </div>
+
+                  <div className="flex gap-3 pt-2">
+                    <button type="button" onClick={() => setShowIncidentModal(false)} className="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-200 transition-all">Cancel</button>
+                    <button type="submit" className="flex-1 py-3.5 bg-rose-500 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-rose-500/20 hover:shadow-rose-500/40 transition-all uppercase">Submit Report</button>
+                  </div>
+                </form>
+              </>
+            )}
           </div>
         </div>
       )}

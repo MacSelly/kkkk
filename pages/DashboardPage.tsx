@@ -26,7 +26,7 @@ interface DashboardPageProps {
 const DashboardPage: React.FC<DashboardPageProps> = ({ userRole }) => {
   const [metric, setMetric] = useState<'revenue' | 'adr' | 'occ'>('revenue');
   const { t } = useLanguage();
-  const { rooms, bookings, guests } = useData();
+  const { rooms, bookings, guests, incidents, updateIncident } = useData();
   const navigate = useNavigate();
 
   const isReceptionist = userRole === UserRole.RECEPTIONIST;
@@ -56,7 +56,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ userRole }) => {
               <span className="text-[10px] font-black uppercase tracking-[0.2em]">Live System Active</span>
             </div>
             <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
-              {t('welcomeMessage')} <span className="text-primary">{userRole === UserRole.ADMIN ? 'James Anderson' : userRole === UserRole.MANAGER ? 'Sarah Jenkins' : 'Alex Rivera'}</span>
+              {t('welcomeMessage')} <span className="text-primary">{userRole === UserRole.ADMIN_MANAGER ? 'James Anderson' : 'Alex Rivera'}</span>
             </h1>
             <p className="text-slate-400 font-medium max-w-lg text-lg">
               {t('daySummary')}
@@ -151,78 +151,135 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ userRole }) => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {!isReceptionist ? (
-          <div className="lg:col-span-8 bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-200 dark:border-slate-700 p-4 sm:p-8 shadow-sm flex flex-col">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
-              <div>
-                <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight uppercase">Performance Analytics</h3>
-                <p className="text-xs text-slate-400 font-bold mt-1 uppercase tracking-widest">Revenue Comparison • Last 7 Days</p>
+        {/* Analytics Section */}
+        <div className={!isReceptionist ? "lg:col-span-8 space-y-8" : "lg:col-span-8 bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-200 dark:border-slate-700 p-8 shadow-sm flex flex-col justify-center items-center text-center"}>
+          {!isReceptionist ? (
+            <>
+              <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-200 dark:border-slate-700 p-4 sm:p-8 shadow-sm flex flex-col">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
+                  <div>
+                    <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight uppercase">Performance Analytics</h3>
+                    <p className="text-xs text-slate-400 font-bold mt-1 uppercase tracking-widest">Revenue Comparison • Last 7 Days</p>
+                  </div>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-1.5 rounded-2xl flex border border-slate-200/50 dark:border-slate-700/50">
+                    {[
+                      { id: 'revenue', label: 'Revenue' },
+                      { id: 'adr', label: 'ADR' },
+                      { id: 'occ', label: 'OCC %' },
+                    ].map((opt) => (
+                      <button
+                        key={opt.id}
+                        onClick={() => setMetric(opt.id as any)}
+                        className={`px-5 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${metric === opt.id ? 'bg-white dark:bg-slate-800 text-primary shadow-lg ring-1 ring-slate-200 dark:ring-slate-700' : 'text-slate-500 hover:text-slate-700 transition-colors'}`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="w-full h-[300px] sm:h-[400px] relative overflow-hidden">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={revenueData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="colorMetric" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#137fec" stopOpacity={0.15}/>
+                          <stop offset="95%" stopColor="#137fec" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="6 6" vertical={false} stroke="#e2e8f0" strokeOpacity={0.5} />
+                      <XAxis 
+                          dataKey="day" 
+                          axisLine={false} 
+                          tickLine={false} 
+                          tick={{ fontSize: 10, fontWeight: 800, fill: '#94a3b8' }} 
+                          dy={15} 
+                      />
+                      <YAxis 
+                          axisLine={false} 
+                          tickLine={false} 
+                          tick={{ fontSize: 10, fontWeight: 800, fill: '#94a3b8' }} 
+                      />
+                      <Tooltip 
+                        contentStyle={{ borderRadius: '24px', border: 'none', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.15)', padding: '20px' }}
+                        itemStyle={{ fontSize: '14px', fontWeight: '900', textTransform: 'uppercase' }}
+                        labelStyle={{ fontSize: '10px', fontWeight: 'bold', color: '#94a3b8', marginBottom: '8px', textTransform: 'uppercase' }}
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey={metric} 
+                        stroke="#137fec" 
+                        strokeWidth={6} 
+                        fill="url(#colorMetric)" 
+                        animationDuration={2000}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
-              <div className="bg-slate-100 dark:bg-slate-900 p-1.5 rounded-2xl flex border border-slate-200/50 dark:border-slate-700/50">
-                {[
-                  { id: 'revenue', label: 'Revenue' },
-                  { id: 'adr', label: 'ADR' },
-                  { id: 'occ', label: 'OCC %' },
-                ].map((opt) => (
-                  <button
-                    key={opt.id}
-                    onClick={() => setMetric(opt.id as any)}
-                    className={`px-5 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${metric === opt.id ? 'bg-white dark:bg-slate-800 text-primary shadow-lg ring-1 ring-slate-200 dark:ring-slate-700' : 'text-slate-500 hover:text-slate-700 transition-colors'}`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
+
+              {/* Incidents Section for Admin/Manager */}
+              <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-200 dark:border-slate-700 p-8 shadow-sm">
+                <div className="flex items-center justify-between mb-8">
+                  <div>
+                    <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight uppercase">Recent Incidents</h3>
+                    <p className="text-xs text-slate-400 font-bold mt-1 uppercase tracking-widest">Live Maintenance & Guest Reports</p>
+                  </div>
+                  <span className="px-3 py-1 bg-rose-50 text-rose-500 rounded-full text-[10px] font-black uppercase tracking-widest border border-rose-100">{incidents.filter(i => i.status !== 'resolved').length} Active</span>
+                </div>
+                <div className="space-y-4">
+                  {incidents.slice(0, 3).map((inc, i) => (
+                    <div key={i} className="flex items-center justify-between p-5 rounded-3xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700/50 group hover:border-rose-200 transition-all">
+                      <div className="flex items-center gap-5">
+                        <div className={`size-12 rounded-2xl flex items-center justify-center shadow-sm ${inc.priority === 'urgent' ? 'bg-rose-500 text-white' : 'bg-white dark:bg-slate-800 text-slate-400'}`}>
+                          <span className="material-symbols-outlined font-black">{inc.category === 'plumbing' ? 'water_drop' : inc.category === 'electrical' ? 'bolt' : 'report'}</span>
+                        </div>
+                        <div>
+                          <p className="text-[11px] font-black text-slate-900 dark:text-white uppercase tracking-widest">Room {inc.roomNumber} • {inc.category}</p>
+                          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest truncate max-w-[200px]">{inc.description}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[10px] font-black text-rose-500 uppercase mb-1">{inc.priority}</p>
+                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{inc.timestamp}</span>
+                      </div>
+                    </div>
+                  ))}
+                  {incidents.length === 0 && (
+                    <div className="py-10 text-center">
+                      <p className="text-slate-400 text-sm italic tracking-widest">No active incidents reported.</p>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-            <div className="flex-1 min-h-[260px] sm:min-h-[380px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={revenueData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="colorMetric" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#137fec" stopOpacity={0.15}/>
-                      <stop offset="95%" stopColor="#137fec" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="6 6" vertical={false} stroke="#e2e8f0" strokeOpacity={0.5} />
-                  <XAxis 
-                      dataKey="day" 
-                      axisLine={false} 
-                      tickLine={false} 
-                      tick={{ fontSize: 10, fontWeight: 800, fill: '#94a3b8' }} 
-                      dy={15} 
-                  />
-                  <YAxis 
-                      axisLine={false} 
-                      tickLine={false} 
-                      tick={{ fontSize: 10, fontWeight: 800, fill: '#94a3b8' }} 
-                  />
-                  <Tooltip 
-                    contentStyle={{ borderRadius: '24px', border: 'none', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.15)', padding: '20px' }}
-                    itemStyle={{ fontSize: '14px', fontWeight: '900', textTransform: 'uppercase' }}
-                    labelStyle={{ fontSize: '10px', fontWeight: 'bold', color: '#94a3b8', marginBottom: '8px', textTransform: 'uppercase' }}
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey={metric} 
-                    stroke="#137fec" 
-                    strokeWidth={6} 
-                    fill="url(#colorMetric)" 
-                    animationDuration={2000}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        ) : (
-          <div className="lg:col-span-8 bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-200 dark:border-slate-700 p-8 shadow-sm flex flex-col justify-center items-center text-center">
-             <div className="size-24 rounded-full bg-slate-50 dark:bg-slate-900 flex items-center justify-center mb-6">
+            </>
+          ) : (
+            <>
+              <div className="size-24 rounded-full bg-slate-50 dark:bg-slate-900 flex items-center justify-center mb-6">
                 <span className="material-symbols-outlined text-4xl text-slate-300">event_available</span>
-             </div>
-             <h3 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Today's Schedule</h3>
-             <p className="text-slate-500 max-w-sm mt-4">Revenue reports are restricted to management. Focus on guest check-ins and housekeeping coordination.</p>
-             <button onClick={() => navigate('/front-desk')} className="mt-8 px-8 h-12 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-primary/20">Go to Front Desk</button>
-          </div>
-        )}
+              </div>
+              <h3 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Today's Schedule</h3>
+              <p className="text-slate-500 max-w-sm mt-4">Revenue reports are restricted to management. Focus on guest check-ins and housekeeping coordination.</p>
+              <button onClick={() => navigate('/front-desk')} className="mt-8 px-8 h-12 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-primary/20">Go to Front Desk</button>
+
+              {/* Incidents Section for Receptionist */}
+              <div className="w-full mt-12 text-left bg-rose-50/30 dark:bg-rose-900/10 border border-rose-100 dark:border-rose-900/30 rounded-[2rem] p-6">
+                <h4 className="text-[10px] font-black text-rose-500 uppercase tracking-widest mb-4">Urgent Attention Required</h4>
+                <div className="space-y-3">
+                  {incidents.filter(i => i.priority === 'urgent' || i.priority === 'high').map((inc, i) => (
+                    <div key={i} className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 rounded-xl border border-rose-100 shadow-sm">
+                      <span className="material-symbols-outlined text-rose-500 text-lg">warning</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-black text-slate-900 dark:text-white uppercase">Room {inc.roomNumber} - {inc.category}</p>
+                        <p className="text-[10px] text-slate-400 truncate">{inc.description}</p>
+                      </div>
+                      <button onClick={() => updateIncident(inc.id, { status: 'in-progress' })} className="text-[10px] font-black text-primary uppercase">Ack</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
 
         <div className="lg:col-span-4 bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-200 dark:border-slate-700 p-5 sm:p-8 flex flex-col shadow-sm min-h-[400px] sm:min-h-[500px]">
           <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight mb-8 uppercase tracking-widest">{t('inventory')}</h3>

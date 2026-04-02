@@ -16,7 +16,7 @@ interface ToastState {
 
 const FrontDeskPage: React.FC<FrontDeskPageProps> = ({ onLogout }) => {
   const { t } = useLanguage();
-  const { rooms, guests, bookings, activities, updateRoom, setRoomStatus, addBooking, addActivity, addGuest } = useData();
+  const { rooms, guests, bookings, activities, incidents, updateRoom, setRoomStatus, addBooking, addActivity, addGuest, updateIncident } = useData();
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterTab, setFilterTab] = useState<'ALL' | RoomStatus>('ALL');
@@ -87,6 +87,38 @@ const FrontDeskPage: React.FC<FrontDeskPageProps> = ({ onLogout }) => {
                 className="h-10 w-full sm:w-48 lg:w-64 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-xs font-bold text-slate-900 dark:text-white pl-10 focus:ring-2 focus:ring-primary/20 transition-all"
               />
             </div>
+            
+            {/* Incident Alert Counter */}
+            <div className="relative group">
+              <button className="size-10 rounded-xl bg-rose-50 dark:bg-rose-900/20 text-rose-500 hover:bg-rose-100 transition-all flex items-center justify-center border border-rose-100 dark:border-rose-900/50 shrink-0">
+                 <span className="material-symbols-outlined text-[20px]">notifications_active</span>
+                 {incidents.filter(i => i.status === 'pending').length > 0 && (
+                   <span className="absolute -top-1 -right-1 size-4 bg-rose-500 text-white text-[8px] font-black flex items-center justify-center rounded-full border-2 border-white dark:border-slate-900 animate-bounce">
+                     {incidents.filter(i => i.status === 'pending').length}
+                   </span>
+                 )}
+              </button>
+              
+              {/* Dropdown with recent incidents */}
+              <div className="absolute right-0 top-full mt-2 w-72 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 p-4 opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto transition-all z-50">
+                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Pending Guest Reports</h4>
+                <div className="space-y-3">
+                  {incidents.filter(i => i.status === 'pending').slice(0, 3).map((inc, i) => (
+                    <div key={i} className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700/50">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[10px] font-black text-rose-500">ROOM {inc.roomNumber}</span>
+                        <span className="text-[8px] font-black text-slate-400 uppercase">{inc.timestamp}</span>
+                      </div>
+                      <p className="text-[10px] font-bold text-slate-900 dark:text-white truncate">{inc.description}</p>
+                    </div>
+                  ))}
+                  {incidents.filter(i => i.status === 'pending').length === 0 && (
+                    <p className="text-[10px] text-slate-400 italic text-center py-4 uppercase font-bold tracking-widest">No active alerts</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
             <button className="size-10 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-500 hover:text-primary transition-colors flex items-center justify-center border border-slate-100 dark:border-slate-700 shrink-0">
                <span className="material-symbols-outlined">refresh</span>
             </button>
