@@ -22,6 +22,15 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ userRole }) => {
   const [isDarkMode, setIsDarkMode] = useState(() => document.documentElement.classList.contains('dark'));
   const [isNightAuditEnabled, setIsNightAuditEnabled] = useState(false);
 
+  // Hotel Profile State
+  const [hotelProfile, setHotelProfile] = useState({
+    name: 'HMS Pro Luxury Hotel',
+    regId: 'HTL-2023-9821',
+    address: '1200 Ocean Drive, Miami Beach, FL 33139, United States',
+    email: 'hello@hmspro.com',
+    phone: '+1 (555) 123-4567'
+  });
+
   // Team Management State
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
     { name: 'James Anderson', role: 'General Manager', email: 'james.a@hmspro.com', status: 'Active' },
@@ -265,28 +274,28 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ userRole }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-4">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] ml-1">Official Property Name</label>
-                    <input type="text" defaultValue="HMS Pro Luxury Hotel" className="w-full h-14 px-6 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/10 dark:text-white transition-all" />
+                    <input type="text" value={hotelProfile.name} onChange={e => setHotelProfile({...hotelProfile, name: e.target.value})} className="w-full h-14 px-6 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/10 dark:text-white transition-all" />
                   </div>
                   <div className="space-y-4">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] ml-1">Registration Identifier</label>
-                    <input type="text" defaultValue="HTL-2023-9821" className="w-full h-14 px-6 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/10 dark:text-white transition-all" />
+                    <input type="text" value={hotelProfile.regId} onChange={e => setHotelProfile({...hotelProfile, regId: e.target.value})} className="w-full h-14 px-6 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/10 dark:text-white transition-all" />
                   </div>
                   <div className="space-y-4 md:col-span-2">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] ml-1">Operations Physical Address</label>
-                    <textarea rows={3} defaultValue="1200 Ocean Drive, Miami Beach, FL 33139, United States" className="w-full p-6 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-3xl text-sm font-bold focus:ring-4 focus:ring-primary/10 dark:text-white transition-all resize-none" />
+                    <textarea rows={3} value={hotelProfile.address} onChange={e => setHotelProfile({...hotelProfile, address: e.target.value})} className="w-full p-6 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-3xl text-sm font-bold focus:ring-4 focus:ring-primary/10 dark:text-white transition-all resize-none" />
                   </div>
                   <div className="space-y-4">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] ml-1">Support Channel / Email</label>
-                    <input type="email" defaultValue="hello@hmspro.com" className="w-full h-14 px-6 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/10 dark:text-white transition-all" />
+                    <input type="email" value={hotelProfile.email} onChange={e => setHotelProfile({...hotelProfile, email: e.target.value})} className="w-full h-14 px-6 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/10 dark:text-white transition-all" />
                   </div>
                   <div className="space-y-4">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] ml-1">Primary Hotline</label>
-                    <input type="text" defaultValue="+1 (555) 123-4567" className="w-full h-14 px-6 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/10 dark:text-white transition-all" />
+                    <input type="text" value={hotelProfile.phone} onChange={e => setHotelProfile({...hotelProfile, phone: e.target.value})} className="w-full h-14 px-6 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/10 dark:text-white transition-all" />
                   </div>
                 </div>
 
                 <div className="flex justify-end pt-4">
-                  <button className="h-16 px-12 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[11px] font-black uppercase tracking-[0.3em] rounded-2xl shadow-2xl hover:scale-[1.02] active:scale-95 transition-all">Update Hotel Profile</button>
+                  <button onClick={() => alert('Hotel profile configuration updated successfully.')} className="h-16 px-12 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[11px] font-black uppercase tracking-[0.3em] rounded-2xl shadow-2xl hover:scale-[1.02] active:scale-95 transition-all">Update Hotel Profile</button>
                 </div>
               </section>
             </div>

@@ -16,7 +16,7 @@ interface ToastState {
 
 const FrontDeskPage: React.FC<FrontDeskPageProps> = ({ onLogout }) => {
   const { t } = useLanguage();
-  const { rooms, guests, bookings, activities, incidents, updateRoom, setRoomStatus, addBooking, addActivity, addGuest, updateIncident } = useData();
+  const { rooms, guests, bookings, activities, incidents, updateRoom, setRoomStatus, addBooking, updateBooking, addActivity, addGuest, updateIncident } = useData();
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterTab, setFilterTab] = useState<'ALL' | RoomStatus>('ALL');
@@ -33,12 +33,12 @@ const FrontDeskPage: React.FC<FrontDeskPageProps> = ({ onLogout }) => {
   };
 
   const getGuestForRoom = (roomNumber: string) => {
-    const booking = bookings.find(b => b.room.number === roomNumber);
+    const booking = bookings.find(b => b.room.number === roomNumber && (b.status === BookingStatus.CHECKED_IN || b.status === BookingStatus.CONFIRMED));
     return booking ? booking.guest : null;
   };
 
   const getBookingForRoom = (roomNumber: string) => {
-    return bookings.find(b => b.room.number === roomNumber);
+    return bookings.find(b => b.room.number === roomNumber && (b.status === BookingStatus.CHECKED_IN || b.status === BookingStatus.CONFIRMED));
   };
 
   const selectedRoom = rooms.find(r => r.id === selectedRoomId) || null;
@@ -55,10 +55,10 @@ const FrontDeskPage: React.FC<FrontDeskPageProps> = ({ onLogout }) => {
   }, [searchQuery, filterTab, rooms]);
 
   const opStats = [
-    { label: 'Pending Arrivals', val: '7', icon: 'login', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
-    { label: 'Due Departures', val: '4', icon: 'logout', color: 'text-rose-500', bg: 'bg-rose-50 dark:bg-rose-900/20' },
-    { label: 'Stay-overs', val: '12', icon: 'night_shelter', color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
-    { label: 'Priority Clean', val: '3', icon: 'priority_high', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' },
+    { label: 'Pending Arrivals', val: String(bookings.filter(b => b.status === BookingStatus.CONFIRMED || b.status === BookingStatus.PENDING).length), icon: 'login', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
+    { label: 'Due Departures', val: String(bookings.filter(b => b.status === BookingStatus.CHECKED_IN).length), icon: 'logout', color: 'text-rose-500', bg: 'bg-rose-50 dark:bg-rose-900/20' },
+    { label: 'Stay-overs', val: String(rooms.filter(r => r.status === RoomStatus.OCCUPIED).length), icon: 'night_shelter', color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
+    { label: 'Priority Clean', val: String(rooms.filter(r => r.status === RoomStatus.CLEANING).length), icon: 'priority_high', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' },
   ];
 
   return (
@@ -202,7 +202,7 @@ const FrontDeskPage: React.FC<FrontDeskPageProps> = ({ onLogout }) => {
                           <>
                             <p className="text-sm font-black text-slate-900 dark:text-white truncate">{guest.name}</p>
                             <div className="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-full mt-2 overflow-hidden">
-                              <div className="w-2/3 h-full bg-primary"></div>
+                              <div className="h-full bg-primary transition-all" style={{ width: (() => { const b = getBookingForRoom(room.number); if (!b) return '0%'; const start = new Date(b.checkIn).getTime(); const end = new Date(b.checkOut).getTime(); const now = Date.now(); const total = end - start; if (total <= 0) return '100%'; return `${Math.min(100, Math.max(0, Math.round(((now - start) / total) * 100)))}%`; })() }}></div>
                             </div>
                           </>
                         ) : (
@@ -301,6 +301,22 @@ const FrontDeskPage: React.FC<FrontDeskPageProps> = ({ onLogout }) => {
                               <p className="text-sm font-black text-slate-900 dark:text-white">{currentBooking?.checkOut}</p>
                            </div>
                         </div>
+
+                        {/* Check-Out Button */}
+                        {selectedRoom.status === RoomStatus.OCCUPIED && currentBooking && (
+                          <button
+                            onClick={() => {
+                              updateBooking(currentBooking.id, { status: BookingStatus.CHECKED_OUT });
+                              setRoomStatus(selectedRoom.id, RoomStatus.CLEANING);
+                              addActivity({ id: `a-${Date.now()}`, timestamp: 'Just now', title: `Guest ${currentBooking.guest.name} checked out`, description: `Room ${selectedRoom.number} is now being prepared for cleaning`, type: 'booking' });
+                              showToast(`${currentBooking.guest.name} checked out from Room ${selectedRoom.number}`, 'logout', 'success');
+                            }}
+                            className="mt-6 w-full h-14 bg-rose-500 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-rose-500/20 hover:shadow-2xl hover:bg-rose-600 active:scale-95 transition-all flex items-center justify-center gap-3"
+                          >
+                            <span className="material-symbols-outlined text-[20px]">logout</span>
+                            Check-Out Guest
+                          </button>
+                        )}
                      </div>
                    ) : (
                      <div className="p-10 rounded-[3.5rem] bg-emerald-50/50 dark:bg-emerald-900/10 border-2 border-dashed border-emerald-100 dark:border-emerald-800/50 flex flex-col items-center text-center">

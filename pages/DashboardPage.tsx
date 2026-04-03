@@ -7,7 +7,7 @@ import {
 } from 'recharts';
 import { useLanguage } from '../LanguageContext.tsx';
 import { useData } from '../DataContext.tsx';
-import { UserRole, RoomStatus } from '../types.ts';
+import { UserRole, RoomStatus, BookingStatus } from '../types.ts';
 
 const revenueData = [
   { day: 'Mon', revenue: 2100, adr: 180, occ: 65 },
@@ -21,15 +21,30 @@ const revenueData = [
 
 interface DashboardPageProps {
   userRole?: UserRole;
+  userName?: string;
 }
 
-const DashboardPage: React.FC<DashboardPageProps> = ({ userRole }) => {
+const DashboardPage: React.FC<DashboardPageProps> = ({ userRole, userName }) => {
   const [metric, setMetric] = useState<'revenue' | 'adr' | 'occ'>('revenue');
   const { t } = useLanguage();
-  const { rooms, bookings, guests, incidents, updateIncident } = useData();
+  const { rooms, bookings, guests, incidents, transactions, updateIncident } = useData();
   const navigate = useNavigate();
 
   const isReceptionist = userRole === UserRole.RECEPTIONIST;
+
+  // ——— Computed KPIs from live data ———
+  const totalRooms = rooms.length;
+  const occupiedRooms = rooms.filter(r => r.status === RoomStatus.OCCUPIED).length;
+  const occupancyRate = totalRooms > 0 ? Math.round((occupiedRooms / totalRooms) * 100) : 0;
+  const todayRevenue = transactions.reduce((sum, t) => t.status === 'Completed' ? sum + t.amount : sum, 0);
+  const adrValue = occupiedRooms > 0 ? Math.round(todayRevenue / occupiedRooms) : 0;
+  const revparValue = totalRooms > 0 ? Math.round(todayRevenue / totalRooms) : 0;
+  const pendingArrivals = bookings.filter(b => b.status === BookingStatus.CONFIRMED || b.status === BookingStatus.PENDING).length;
+  const pendingDepartures = bookings.filter(b => b.status === BookingStatus.CHECKED_IN).length;
+  const vipGuestCount = guests.filter(g => g.isVIP).length;
+  const cleaningCount = rooms.filter(r => r.status === RoomStatus.CLEANING).length;
+  const maintenanceCount = rooms.filter(r => r.status === RoomStatus.MAINTENANCE).length;
+  const waitlistCount = bookings.filter(b => b.status === BookingStatus.PENDING).length;
 
   const occupancyData = useMemo(() => [
     { name: 'Occupied', value: rooms.filter(r => r.status === RoomStatus.OCCUPIED).length, color: '#f43f5e' },
@@ -56,7 +71,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ userRole }) => {
               <span className="text-[10px] font-black uppercase tracking-[0.2em]">Live System Active</span>
             </div>
             <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
-              {t('welcomeMessage')} <span className="text-primary">{userRole === UserRole.ADMIN_MANAGER ? 'James Anderson' : 'Alex Rivera'}</span>
+              {t('welcomeMessage')} <span className="text-primary">{userName || 'Manager'}</span>
             </h1>
             <p className="text-slate-400 font-medium max-w-lg text-lg">
               {t('daySummary')}
@@ -66,21 +81,21 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ userRole }) => {
                 <span className="material-symbols-outlined text-primary">flight_land</span>
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{t('todayArrivals')}</p>
-                  <p className="text-lg font-black leading-none">14</p>
+                  <p className="text-lg font-black leading-none">{String(pendingArrivals).padStart(2, '0')}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-2xl">
                 <span className="material-symbols-outlined text-rose-400">flight_takeoff</span>
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{t('todayDepartures')}</p>
-                  <p className="text-lg font-black leading-none">08</p>
+                  <p className="text-lg font-black leading-none">{String(pendingDepartures).padStart(2, '0')}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-2xl">
                 <span className="material-symbols-outlined text-amber-400">auto_awesome</span>
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{t('vipGuests')}</p>
-                  <p className="text-lg font-black leading-none">03</p>
+                  <p className="text-lg font-black leading-none">{String(vipGuestCount).padStart(2, '0')}</p>
                 </div>
               </div>
             </div>
@@ -123,13 +138,13 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ userRole }) => {
       {/* KPI Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
         {[
-          { label: t('revenueToday'), value: '$8,420', icon: 'account_balance_wallet', trend: '↑ 12%', color: 'blue', hidden: isReceptionist },
-          { label: t('adr'), value: '$245', icon: 'payments', trend: '↑ 2%', color: 'violet', hidden: isReceptionist },
-          { label: t('occupancy'), value: '72%', icon: 'bed', trend: '↑ 4%', color: 'rose', hidden: false },
-          { label: t('revpar'), value: '$186', icon: 'trending_up', trend: '↑ 5%', color: 'indigo', hidden: isReceptionist },
-          { label: 'Cleaning Tasks', value: '05', icon: 'cleaning_services', trend: 'Pending', color: 'blue', hidden: !isReceptionist },
-          { label: 'Maintenance', value: '02', icon: 'build', trend: 'Critical', color: 'violet', hidden: !isReceptionist },
-          { label: 'Waitlist', value: '11', icon: 'hourglass_empty', trend: '↑ 8%', color: 'indigo', hidden: !isReceptionist },
+          { label: t('revenueToday'), value: `$${todayRevenue.toLocaleString()}`, icon: 'account_balance_wallet', trend: '↑ 12%', color: 'blue', hidden: isReceptionist },
+          { label: t('adr'), value: `$${adrValue}`, icon: 'payments', trend: '↑ 2%', color: 'violet', hidden: isReceptionist },
+          { label: t('occupancy'), value: `${occupancyRate}%`, icon: 'bed', trend: '↑ 4%', color: 'rose', hidden: false },
+          { label: t('revpar'), value: `$${revparValue}`, icon: 'trending_up', trend: '↑ 5%', color: 'indigo', hidden: isReceptionist },
+          { label: 'Cleaning Tasks', value: String(cleaningCount).padStart(2, '0'), icon: 'cleaning_services', trend: 'Pending', color: 'blue', hidden: !isReceptionist },
+          { label: 'Maintenance', value: String(maintenanceCount).padStart(2, '0'), icon: 'build', trend: maintenanceCount > 0 ? 'Critical' : 'Clear', color: 'violet', hidden: !isReceptionist },
+          { label: 'Waitlist', value: String(waitlistCount).padStart(2, '0'), icon: 'hourglass_empty', trend: waitlistCount > 0 ? `${waitlistCount} pending` : 'None', color: 'indigo', hidden: !isReceptionist },
         ].filter(kpi => !kpi.hidden).map((kpi, idx) => (
           <div key={idx} className="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-[2rem] border border-slate-100 dark:border-slate-700 shadow-sm group hover:border-primary transition-all hover:shadow-xl">
             <div className={`size-12 rounded-2xl mb-4 flex items-center justify-center 
@@ -303,7 +318,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ userRole }) => {
               </PieChart>
             </ResponsiveContainer>
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-6xl font-black text-slate-900 dark:text-white tracking-tighter">72<span className="text-2xl text-slate-400">%</span></span>
+              <span className="text-6xl font-black text-slate-900 dark:text-white tracking-tighter">{occupancyRate}<span className="text-2xl text-slate-400">%</span></span>
               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{t('occupancy')}</span>
             </div>
           </div>

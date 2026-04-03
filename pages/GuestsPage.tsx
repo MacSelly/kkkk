@@ -25,6 +25,10 @@ const GuestsPage: React.FC = () => {
   const [messageText, setMessageText] = useState('');
   const [isSending, setIsSending] = useState(false);
 
+  // Edit Guest State
+  const [isEditingGuest, setIsEditingGuest] = useState(false);
+  const [editGuestData, setEditGuestData] = useState<Partial<Guest>>({});
+
   const selectedGuest = useMemo(() => 
     localGuests.find(g => g.id === selectedGuestId) || null
   , [selectedGuestId, localGuests]);
@@ -208,7 +212,7 @@ const GuestsPage: React.FC = () => {
                       )}
                     </div>
                   </td>
-                  <td className="p-6 text-right font-black text-slate-900 dark:text-white">${guest.isVIP ? '4,820.00' : '1,250.00'}</td>
+                  <td className="p-6 text-right font-black text-slate-900 dark:text-white">${(guest.pastStays?.reduce((sum, s) => sum + s.total, 0) || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                   <td className="p-6 text-right">
                     <button className="text-slate-400 hover:text-primary transition-colors">
                       <span className="material-symbols-outlined">more_vert</span>
@@ -240,24 +244,40 @@ const GuestsPage: React.FC = () => {
               <>
                 <div className="px-8 py-6 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0 z-20">
                   <button 
-                    onClick={() => setSelectedGuestId(null)}
+                    onClick={() => {
+                      setSelectedGuestId(null);
+                      setIsEditingGuest(false);
+                    }}
                     className="size-11 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-rose-500 transition-colors border border-slate-100 dark:border-slate-700"
                   >
                     <span className="material-symbols-outlined text-[20px]">close</span>
                   </button>
                   <div className="flex gap-3">
                     <button 
-                      onClick={() => alert(`Showing history for ${selectedGuest.name}`)}
-                      className="h-11 px-6 bg-slate-100 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-slate-200"
+                      onClick={() => {
+                        if (isEditingGuest) {
+                          if (selectedGuestId) {
+                            updateGuest(selectedGuestId, editGuestData);
+                            addActivity({ id: `a-${Date.now()}`, timestamp: 'Just now', title: `Guest profile updated`, description: `Updated details for ${editGuestData.name || selectedGuest.name}`, type: 'system' });
+                          }
+                          setIsEditingGuest(false);
+                        } else {
+                          setEditGuestData(selectedGuest);
+                          setIsEditingGuest(true);
+                        }
+                      }}
+                      className={`h-11 px-6 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${isEditingGuest ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
                     >
-                      History
+                      {isEditingGuest ? 'Save Changes' : 'Edit Profile'}
                     </button>
-                    <button 
-                      onClick={() => setIsMessageModalOpen(true)}
-                      className="h-11 px-6 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-primary/20"
-                    >
-                      Send Message
-                    </button>
+                    {!isEditingGuest && (
+                      <button 
+                        onClick={() => setIsMessageModalOpen(true)}
+                        className="h-11 px-6 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-primary/20"
+                      >
+                        Send Message
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -268,18 +288,38 @@ const GuestsPage: React.FC = () => {
                     <div className="flex flex-col items-center text-center">
                        <div className="relative group">
                          <div className="size-36 rounded-[3.5rem] bg-slate-100 dark:bg-slate-800 border-4 border-white dark:border-slate-800 shadow-2xl overflow-hidden bg-cover bg-center flex items-center justify-center mb-8" style={selectedGuest.avatar ? {backgroundImage: `url(${selectedGuest.avatar})`} : {}}>
-                            {!selectedGuest.avatar && <span className="font-black text-5xl text-slate-300">{selectedGuest.name[0]}</span>}
+                            {!selectedGuest.avatar && <span className="font-black text-5xl text-slate-300">{isEditingGuest ? (editGuestData.name?.[0] || 'G') : selectedGuest.name[0]}</span>}
                          </div>
                          <div className="absolute -bottom-2 -right-2 size-12 rounded-2xl bg-amber-400 text-white flex items-center justify-center border-4 border-white dark:border-slate-900 shadow-lg">
                             <span className="material-symbols-outlined text-[24px]">workspace_premium</span>
                          </div>
                        </div>
-                       <h3 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">{selectedGuest.name}</h3>
-                       <div className="flex items-center gap-3 mt-4">
-                         <span className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.4em]">{selectedGuest.loyaltyTier || 'Elite'} Member</span>
-                         <span className="h-1 w-1 rounded-full bg-slate-300"></span>
-                         <span className="text-[10px] text-primary font-black uppercase tracking-[0.2em]">Since {selectedGuest.memberSince || '2023'}</span>
-                       </div>
+                       
+                       {isEditingGuest ? (
+                         <div className="w-full max-w-sm space-y-4 text-left">
+                           <div>
+                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
+                             <input type="text" value={editGuestData.name || ''} onChange={e => setEditGuestData({...editGuestData, name: e.target.value})} className="mt-1 w-full h-12 px-4 bg-slate-50 dark:bg-slate-800 rounded-xl text-sm font-bold border-none focus:ring-2 focus:ring-primary dark:text-white" />
+                           </div>
+                           <div>
+                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email</label>
+                             <input type="email" value={editGuestData.email || ''} onChange={e => setEditGuestData({...editGuestData, email: e.target.value})} className="mt-1 w-full h-12 px-4 bg-slate-50 dark:bg-slate-800 rounded-xl text-sm font-bold border-none focus:ring-2 focus:ring-primary dark:text-white" />
+                           </div>
+                           <div>
+                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone</label>
+                             <input type="tel" value={editGuestData.phone || ''} onChange={e => setEditGuestData({...editGuestData, phone: e.target.value})} className="mt-1 w-full h-12 px-4 bg-slate-50 dark:bg-slate-800 rounded-xl text-sm font-bold border-none focus:ring-2 focus:ring-primary dark:text-white" />
+                           </div>
+                         </div>
+                       ) : (
+                         <>
+                           <h3 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">{selectedGuest.name}</h3>
+                           <div className="flex items-center gap-3 mt-4">
+                             <span className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.4em]">{selectedGuest.loyaltyTier || 'Elite'} Member</span>
+                             <span className="h-1 w-1 rounded-full bg-slate-300"></span>
+                             <span className="text-[10px] text-primary font-black uppercase tracking-[0.2em]">Since {selectedGuest.memberSince || '2023'}</span>
+                           </div>
+                         </>
+                       )}
                     </div>
 
                     {/* 2. Key Metrics Grid */}
@@ -293,7 +333,7 @@ const GuestsPage: React.FC = () => {
                           <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-2">Visits</p>
                        </div>
                        <div className="text-center">
-                          <p className="text-2xl font-black text-emerald-500 tracking-tighter leading-none">$4.8k</p>
+                          <p className="text-2xl font-black text-emerald-500 tracking-tighter leading-none">${((selectedGuest.pastStays?.reduce((sum, s) => sum + s.total, 0) || 0) / 1000).toFixed(1)}k</p>
                           <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-2">LTV</p>
                        </div>
                     </div>
@@ -305,10 +345,15 @@ const GuestsPage: React.FC = () => {
                             <span className="material-symbols-outlined text-[16px]">military_tech</span>
                             {selectedGuest.loyaltyTier} Tier Progress
                           </h4>
-                          <span className="text-[10px] font-bold text-primary">850 pts to Platinum</span>
+                          <span className="text-[10px] font-bold text-primary">{(() => {
+                            const pts = selectedGuest.loyaltyPoints || 0;
+                            const tiers = [{ name: 'Silver', target: 2000 }, { name: 'Gold', target: 5000 }, { name: 'Platinum', target: 10000 }];
+                            const next = tiers.find(t => pts < t.target);
+                            return next ? `${(next.target - pts).toLocaleString()} pts to ${next.name}` : 'Max Tier Reached';
+                          })()}</span>
                        </div>
-                       <div className="h-3 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden p-1">
-                          <div className="h-full bg-gradient-to-r from-amber-400 to-amber-500 rounded-full" style={{ width: '75%' }}></div>
+                       <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden mt-3">
+                          <div className="h-full bg-gradient-to-r from-amber-400 to-amber-500 rounded-full" style={{ width: `${Math.min(100, ((selectedGuest.loyaltyPoints || 0) / 10000) * 100)}%` }}></div>
                        </div>
                     </div>
 
@@ -475,6 +520,17 @@ const GuestsPage: React.FC = () => {
                       placeholder="name@domain.com"
                       value={newGuestData.email}
                       onChange={(e) => setNewGuestData({...newGuestData, email: e.target.value})}
+                      className="w-full h-12 pl-4 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-primary shadow-sm dark:text-white"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
+                    <input 
+                      type="tel" 
+                      placeholder="+1 (555) 123-4567"
+                      value={newGuestData.phone}
+                      onChange={(e) => setNewGuestData({...newGuestData, phone: e.target.value})}
                       className="w-full h-12 pl-4 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-primary shadow-sm dark:text-white"
                     />
                   </div>

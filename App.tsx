@@ -88,7 +88,7 @@ const App: React.FC = () => {
               <Route path="/dashboard" element={
                 <ProtectedRoute user={currentUser} allowedRoles={[UserRole.ADMIN_MANAGER, UserRole.RECEPTIONIST]}>
                   <DashboardLayout user={currentUser} onLogout={handleLogout}>
-                    <DashboardPage userRole={currentUser?.role} />
+                    <DashboardPage userRole={currentUser?.role} userName={currentUser?.name} />
                   </DashboardLayout>
                 </ProtectedRoute>
               } />

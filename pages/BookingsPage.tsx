@@ -106,6 +106,27 @@ const BookingsPage: React.FC = () => {
   const handleCreateBooking = (e: React.FormEvent) => {
     e.preventDefault();
     const targetRoom = rooms.find(r => r.number === newBookingData.roomNumber) || rooms[0];
+
+    // Date validation
+    const startDate = new Date(newBookingData.checkIn);
+    const endDate = new Date(newBookingData.checkOut);
+    if (endDate <= startDate) {
+      showToast('Check-out date must be after check-in date', 'error', 'warning');
+      return;
+    }
+
+    // Room conflict validation
+    const conflicting = localBookings.find(b =>
+      b.room.number === targetRoom.number &&
+      b.status !== BookingStatus.CHECKED_OUT &&
+      b.status !== BookingStatus.CANCELLED &&
+      new Date(b.checkIn) < endDate &&
+      new Date(b.checkOut) > startDate
+    );
+    if (conflicting) {
+      showToast(`Room ${targetRoom.number} is already booked for those dates (${conflicting.ref})`, 'event_busy', 'warning');
+      return;
+    }
     
     const newEntry: Booking = {
       id: `b${Date.now()}`,
@@ -120,7 +141,12 @@ const BookingsPage: React.FC = () => {
       checkIn: newBookingData.checkIn,
       checkOut: newBookingData.checkOut,
       guestsCount: newBookingData.guestsCount,
-      totalAmount: targetRoom.pricePerNight * 3, // Mock calculation
+      totalAmount: (() => {
+        const start = new Date(newBookingData.checkIn);
+        const end = new Date(newBookingData.checkOut);
+        const nights = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
+        return targetRoom.pricePerNight * nights;
+      })(),
       depositPaid: 0,
       paymentStatus: PaymentStatus.UNPAID,
       status: BookingStatus.CONFIRMED
@@ -133,9 +159,9 @@ const BookingsPage: React.FC = () => {
 
   const stats = [
     { label: 'Total Bookings', value: localBookings.length, icon: 'book_online', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
-    { label: 'Arrivals Today', value: '14', icon: 'flight_land', color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
-    { label: 'Pending Payment', value: '$2,450', icon: 'pending_actions', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' },
-    { label: 'Occupancy Rate', value: '72%', icon: 'percent', color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-900/20' },
+    { label: 'Pending Arrivals', value: localBookings.filter(b => b.status === BookingStatus.CONFIRMED || b.status === BookingStatus.PENDING).length, icon: 'flight_land', color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
+    { label: 'Pending Payment', value: `$${localBookings.filter(b => b.paymentStatus !== PaymentStatus.PAID).reduce((sum, b) => sum + (b.totalAmount - b.depositPaid), 0).toLocaleString()}`, icon: 'pending_actions', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' },
+    { label: 'Occupancy Rate', value: `${rooms.length > 0 ? Math.round((rooms.filter(r => r.status === 'OCCUPIED').length / rooms.length) * 100) : 0}%`, icon: 'percent', color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-900/20' },
   ];
 
   return (
@@ -197,7 +223,7 @@ const BookingsPage: React.FC = () => {
           
             <div className="flex items-center gap-2 sm:gap-3 w-full md:w-auto overflow-x-auto scrollbar-hide">
               <div className="flex bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200/50 dark:border-slate-700/50 shrink-0">
-              {(['ALL', BookingStatus.CONFIRMED, BookingStatus.PENDING, BookingStatus.CHECKED_IN] as const).map((status) => (
+              {(['ALL', BookingStatus.CONFIRMED, BookingStatus.PENDING, BookingStatus.CHECKED_IN, BookingStatus.CHECKED_OUT, BookingStatus.CANCELLED] as const).map((status) => (
                 <button
                   key={status}
                   onClick={() => setStatusFilter(status)}
@@ -453,7 +479,7 @@ const BookingsPage: React.FC = () => {
                               <div className="absolute top-1/2 left-0 -translate-y-1/2 size-2 rounded-full bg-primary ring-4 ring-white dark:ring-slate-800"></div>
                               <div className="absolute top-1/2 right-0 -translate-y-1/2 size-2 rounded-full bg-slate-200 dark:bg-slate-700 ring-4 ring-white dark:ring-slate-800"></div>
                            </div>
-                           <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-3">4 Nights Stay</span>
+                           <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-3">{(() => { const s = new Date(selectedBooking.checkIn); const e = new Date(selectedBooking.checkOut); const n = Math.max(1, Math.ceil((e.getTime() - s.getTime()) / 86400000)); return `${n} Night${n !== 1 ? 's' : ''} Stay`; })()}</span>
                         </div>
                         <div className="text-right">
                           <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Check Out</p>

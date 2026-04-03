@@ -106,11 +106,17 @@ const FinancePage: React.FC = () => {
     }
   };
 
+  // ——— Computed financial KPIs from live data ———
+  const completedRevenue = localTransactions.filter(t => t.status === 'Completed').reduce((sum, t) => sum + t.amount, 0);
+  const refundedAmount = localTransactions.filter(t => t.status === 'Refunded').reduce((sum, t) => sum + t.amount, 0);
+  const pendingAmount = localTransactions.filter(t => t.status === 'Pending').reduce((sum, t) => sum + t.amount, 0);
+  const netRevenue = completedRevenue - refundedAmount;
+
   const stats = [
-    { label: 'Total Revenue', val: '$142,580', trend: '+12.5%', icon: 'account_balance', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
-    { label: 'Operating Costs', val: '$38,240', trend: '-2.1%', icon: 'payments', color: 'text-rose-500', bg: 'bg-rose-50 dark:bg-rose-900/20' },
-    { label: 'Net Profit', val: '$104,340', trend: '+18.2%', icon: 'trending_up', color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
-    { label: 'Pending Payouts', val: `$${localTransactions.filter(t => t.status === 'Pending').reduce((acc, curr) => acc + curr.amount, 0)}`, trend: 'Active', icon: 'hourglass_empty', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' },
+    { label: 'Total Revenue', val: `$${completedRevenue.toLocaleString()}`, trend: '+12.5%', icon: 'account_balance', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
+    { label: 'Refunded', val: `$${refundedAmount.toLocaleString()}`, trend: `${localTransactions.filter(t => t.status === 'Refunded').length} items`, icon: 'payments', color: 'text-rose-500', bg: 'bg-rose-50 dark:bg-rose-900/20' },
+    { label: 'Net Revenue', val: `$${netRevenue.toLocaleString()}`, trend: completedRevenue > 0 ? `${Math.round((netRevenue / completedRevenue) * 100)}% margin` : '0%', icon: 'trending_up', color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
+    { label: 'Pending Payouts', val: `$${pendingAmount.toLocaleString()}`, trend: 'Active', icon: 'hourglass_empty', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' },
   ];
 
   return (

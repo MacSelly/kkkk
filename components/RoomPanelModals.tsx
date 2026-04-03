@@ -150,6 +150,10 @@ export const CheckInModal: React.FC<CheckInModalProps> = ({ room, guests, onChec
   const [processing, setProcessing] = useState(false);
 
   const handleCheckIn = () => {
+    if (room.status === RoomStatus.OCCUPIED) {
+      alert(`Room ${room.number} is already occupied. Cannot proceed with check-in.`);
+      return;
+    }
     let guest: Guest;
     if (mode === 'existing') {
       const found = guests.find(g => g.id === selectedGuestId);
